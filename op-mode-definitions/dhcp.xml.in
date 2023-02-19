@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interfaceDefinition>
+  <node name="show">
+    <children>
+      <node name="dhcp">
+        <properties>
+          <help>Show DHCP (Dynamic Host Configuration Protocol) information</help>
+        </properties>
+        <children>
+          <node name="server">
+            <properties>
+              <help>Show DHCP server information</help>
+            </properties>
+            <children>
+              <node name="leases">
+                <properties>
+                  <help>Show DHCP server leases</help>
+                </properties>
+                <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet</command>
+                <children>
+                  <tagNode name="pool">
+                    <properties>
+                      <help>Show DHCP server leases for a specific pool</help>
+                      <completionHelp>
+                        <path>service dhcp-server shared-network-name</path>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet --pool $6</command>
+                  </tagNode>
+                  <tagNode name="sort">
+                    <properties>
+                      <help>Show DHCP server leases sorted by the specified key</help>
+                      <completionHelp>
+                        <list>end hostname ip mac pool remaining start state</list>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet --sort $6</command>
+                  </tagNode>
+                  <tagNode name="state">
+                    <properties>
+                      <help>Show DHCP server leases with a specific state (can be multiple, comma-separated)</help>
+                      <completionHelp>
+                        <list>abandoned active all backup expired free released reset</list>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet --state $6</command>
+                  </tagNode>
+                </children>
+              </node>
+              <node name="statistics">
+                <properties>
+                  <help>Show DHCP server statistics</help>
+                </properties>
+                <command>${vyos_op_scripts_dir}/dhcp.py show_pool_statistics --family inet</command>
+                <children>
+                  <tagNode name="pool">
+                    <properties>
+                      <help>Show DHCP server statistics for a specific pool</help>
+                      <completionHelp>
+                        <path>service dhcp-server shared-network-name</path>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_pool_statistics --family inet --pool $6</command>
+                  </tagNode>
+                </children>
+              </node>
+            </children>
+          </node>
+        </children>
+      </node>
+      <node name="dhcpv6">
+        <properties>
+          <help>Show DHCPv6 (IPv6 Dynamic Host Configuration Protocol) information</help>
+        </properties>
+        <children>
+          <node name="server">
+            <properties>
+              <help>Show DHCPv6 server information</help>
+            </properties>
+            <children>
+              <node name="leases">
+                <properties>
+                  <help>Show DHCPv6 server leases</help>
+                </properties>
+                <command>sudo ${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet6</command>
+                <children>
+                  <tagNode name="pool">
+                    <properties>
+                      <help>Show DHCPv6 server leases for a specific pool</help>
+                      <completionHelp>
+                        <path>service dhcpv6-server shared-network-name</path>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet6 --pool $6</command>
+                  </tagNode>
+                  <tagNode name="sort">
+                    <properties>
+                      <help>Show DHCPv6 server leases sorted by the specified key</help>
+                      <completionHelp>
+                        <list>end iaid_duid ip last_communication pool remaining state type</list>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet6 --sort $6</command>
+                  </tagNode>
+                  <tagNode name="state">
+                    <properties>
+                      <help>Show DHCPv6 server leases with a specific state (can be multiple, comma-separated)</help>
+                      <completionHelp>
+                        <list>abandoned active all backup expired free released reset</list>
+                      </completionHelp>
+                    </properties>
+                    <command>${vyos_op_scripts_dir}/dhcp.py show_server_leases --family inet6 --state $6</command>
+                  </tagNode>
+                </children>
+              </node>
+            </children>
+          </node>
+        </children>
+      </node>
+    </children>
+  </node>
+  <node name="restart">
+    <children>
+      <node name="dhcp">
+        <properties>
+          <help>Restart DHCP processes</help>
+        </properties>
+        <children>
+          <node name="server">
+            <properties>
+              <help>Restart DHCP server</help>
+            </properties>
+            <command>if cli-shell-api existsActive service dhcp-server; then sudo systemctl restart isc-dhcp-server.service; else echo "DHCP server not configured"; fi</command>
+          </node>
+          <node name="relay-agent">
+            <properties>
+              <help>Restart DHCP relay-agent</help>
+            </properties>
+            <command>sudo ${vyos_op_scripts_dir}/restart_dhcp_relay.py --ipv4</command>
+          </node>
+        </children>
+      </node>
+      <node name="dhcpv6">
+        <properties>
+          <help>Restart DHCPv6 processes</help>
+        </properties>
+        <children>
+          <node name="server">
+            <properties>
+              <help>Restart DHCPv6 server</help>
+            </properties>
+            <command>if cli-shell-api existsActive service dhcpv6-server; then sudo systemctl restart isc-dhcp-server6.service; else echo "DHCPv6 server not configured"; fi</command>
+          </node>
+          <node name="relay-agent">
+            <properties>
+              <help>Restart DHCPv6 relay-agent</help>
+            </properties>
+            <command>sudo ${vyos_op_scripts_dir}/restart_dhcp_relay.py --ipv6</command>
+          </node>
+        </children>
+      </node>
+    </children>
+  </node>
+  <node name="renew">
+    <properties>
+      <help>Renew specified variable</help>
+    </properties>
+    <children>
+      <node name="dhcp">
+        <properties>
+          <help>Renew DHCP client lease</help>
+        </properties>
+        <children>
+          <tagNode name="interface">
+            <properties>
+              <help>Renew DHCP client lease for specified interface</help>
+              <completionHelp>
+                <script>${vyos_completion_dir}/list_interfaces.py</script>
+              </completionHelp>
+            </properties>
+            <command>sudo systemctl restart "dhclient@$4.service"</command>
+          </tagNode>
+        </children>
+      </node>
+      <node name="dhcpv6">
+        <properties>
+          <help>Renew DHCPv6 client lease</help>
+        </properties>
+        <children>
+          <tagNode name="interface">
+            <properties>
+              <help>Renew DHCPv6 client lease for specified interface</help>
+              <completionHelp>
+                <script>${vyos_completion_dir}/list_interfaces.py</script>
+              </completionHelp>
+            </properties>
+            <command>sudo systemctl restart "dhcp6c@$4.service"</command>
+          </tagNode>
+        </children>
+      </node>
+    </children>
+  </node>
+</interfaceDefinition>
